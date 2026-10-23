@@ -1,7 +1,11 @@
+```yaml
 name: Build Dhikr Reminder APK
 
 on:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -12,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
@@ -24,10 +28,13 @@ jobs:
 
       - name: Build APK
         working-directory: DhikrReminderAndroid
-        run: gradle assembleDebug
+        run: gradle --no-daemon assembleDebug --stacktrace
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: DhikrReminder-debug-apk
           path: DhikrReminderAndroid/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+```
